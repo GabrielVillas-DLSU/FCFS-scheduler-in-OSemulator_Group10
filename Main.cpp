@@ -16,8 +16,11 @@ condition_variable schedulerCV;
 atomic<bool> isEmulatorRunning(true);
 
 // Track CPU cores (true = free, false = busy)
-const int NUM_CORES = 4;
-atomic<bool> cpuFree[NUM_CORES];
+atomic<bool> cpuFree[ThreadWorker::N_THREADS];
+
+vector<unique_ptr<Process>> processList;
+
+
 
 void fcfs_scheduler()
 {
@@ -44,7 +47,7 @@ void fcfs_scheduler()
         bool assigned = false;
         while (!assigned && isEmulatorRunning)
         {
-            for (int i = 0; i < NUM_CORES; ++i)
+            for (int i = 0; i < ThreadWorker::N_THREADS; ++i)
             {
                 bool expectedToBeFree = true;
                 
@@ -79,11 +82,28 @@ void fcfs_scheduler()
 int main()
 {
     // Initialize CPU cores as free
-    for (int i = 0; i < NUM_CORES; i++) {
+    for (int i = 0; i < ThreadWorker::N_THREADS; i++) {
         cpuFree[i] = true;
     }
 
+
+    for(int i = 1; i < 11; i++){
+        processList.push_back(std::make_unique<Process>("screen_"+std::to_string(i)));
+    }
+
+
+    for(int i = 0; i < 10; i++)
+    {
+        lock_guard<mutex> lock(queueMutex);
+        readyQueue.push(processList[i].get());
+    }
+
     thread schedulerThread(fcfs_scheduler);
+
+    schedulerCV.notify_one();
+
+    // Keep the program alive long enough for the detached worker to print.
+    this_thread::sleep_for(chrono::seconds(60));
 
     // The other stuff goes here
 

@@ -11,7 +11,7 @@ Process::Process(string name)
     for (int i =0; i < 100; i++)
     {
         print_commands.push_back(
-            "Print Command "
+            "Print Command"
         );
     }
 }
