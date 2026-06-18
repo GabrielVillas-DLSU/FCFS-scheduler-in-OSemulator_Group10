@@ -20,7 +20,4 @@ public:
     vector<string> print_commands;
     Process(string name);
 
-
-
-
 };

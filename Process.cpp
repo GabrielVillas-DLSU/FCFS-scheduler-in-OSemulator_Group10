@@ -14,7 +14,4 @@ Process::Process(string name)
             "Print Command "
         );
     }
-
-
-
 }
