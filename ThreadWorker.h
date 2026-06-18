@@ -1,7 +1,7 @@
 #pragma once
 
 #include <thread>
-#include "Process.cpp"
+#include "Process.h"
 
 
 class ThreadWorker {
