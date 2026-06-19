@@ -55,9 +55,10 @@ void fcfs_scheduler()
                 if (cpuFree[i].compare_exchange_strong(expectedToBeFree, false))
                 {
                     nextProcess->state = RUNNING;
-                    
+                    nextProcess->core_id = i;
                     // Assign the process to the ThreadWorker and run it
                     thread([i, nextProcess]() {
+
                         ThreadWorker worker(i, *nextProcess); 
                         worker.run_async();
                         
@@ -103,7 +104,55 @@ int main()
     schedulerCV.notify_one();
 
     // Keep the program alive long enough for the detached worker to print.
-    this_thread::sleep_for(chrono::seconds(60));
+    string command;
+
+ while(true)
+{
+    cout << "Enter a command: ";
+
+    getline(cin, command);
+
+    if(command == "screen -ls")
+    {
+        cout << endl;
+
+        cout << "Running processes:" << endl;
+
+        for(auto& process : processList)
+        {
+                cout
+                    << "Name: "
+                    << process->process_name
+
+                    << " | Core: ";
+
+                    if(process->core_id == -1)
+                            {
+                                cout << "N/A";
+                            }
+                            else
+                            {
+                                cout << process->core_id;
+                            }
+                    cout << " | "
+
+                    << process->current_instruction
+
+                    << " / "
+
+                    << process->total_instructions
+
+                    << endl;
+        }
+
+        cout << endl;
+    }
+
+    else if(command == "exit")
+    {
+        break;
+    }
+}
 
     // The other stuff goes here
 

@@ -19,5 +19,5 @@ public:
     int total_instructions;
     vector<string> print_commands;
     Process(string name);
-
+    int core_id = -1;
 };

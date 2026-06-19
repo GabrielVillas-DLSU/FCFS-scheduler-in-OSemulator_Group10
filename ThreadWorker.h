@@ -11,9 +11,9 @@ public:
 private:
     inline static const int DELAY = 100;                // Sleep duration
     int id;
-    Process ProcesstoExecute;
+    Process& ProcesstoExecute;
 
 public:
-    ThreadWorker(int i, Process ProcesstoExecute);
+    ThreadWorker(int i, Process& ProcesstoExecute);
     void run_async();
 };

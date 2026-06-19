@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Jp/Desktop/CSOPESY/FCFS-scheduler-in-OSemulator_Group10",
-      "program": "c:/Users/Jp/Desktop/CSOPESY/FCFS-scheduler-in-OSemulator_Group10/build/Debug/outDebug",
+      "cwd": "c:/Users/villa/CS PROJECTS/CSOPESY/Projects/FCFS_scheduler_in_OS_emulator",
+      "program": "c:/Users/villa/CS PROJECTS/CSOPESY/Projects/FCFS_scheduler_in_OS_emulator/app.exe",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

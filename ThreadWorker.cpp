@@ -6,13 +6,22 @@
 #include <thread>
 #include <chrono>
 
-ThreadWorker::ThreadWorker(int i, Process ProcesstoExecute) : id(i), ProcesstoExecute(ProcesstoExecute)  {}
+ThreadWorker::ThreadWorker(int i, Process& ProcesstoExecute) : id(i), ProcesstoExecute(ProcesstoExecute)  {}
 
 //Executes the function
 void ThreadWorker::run_async() {
 
-       //edit this depending on what directory you want the written text files to be in
-       const std::string fileName ="C:\\Users\\river\\Desktop\\C++\\CSOPESY\\FCFS2\\PROCESS_FOLDER\\process_"+ProcesstoExecute.process_name+".txt";
+   ProcesstoExecute.state = RUNNING;
+    for(int i = 0; i < ProcesstoExecute.total_instructions; i++)
+    {
+        ProcesstoExecute.current_instruction = i + 1;
+
+        this_thread::sleep_for(
+            chrono::milliseconds(100)
+        );
+    }
+     ProcesstoExecute.state = FINISHED;
+       const std::string fileName = "process_" +ProcesstoExecute.process_name+".txt";
        ofstream writeFile(fileName);
 
        writeFile << "Process name: " << ProcesstoExecute.process_name << std::endl;
@@ -26,7 +35,6 @@ void ThreadWorker::run_async() {
        
           char timeString[50];
           std::strftime(timeString, sizeof(timeString), "%m/%d/%y %I:%M:%S%p", &datetime);
-          
           writeFile <<"(" << timeString <<") "<< "Core:" << id << " \"" << "Hello World from "<< ProcesstoExecute.process_name<<"!" << "\"" << std::endl;
           this_thread::sleep_for(chrono::milliseconds(100));
        }
