@@ -11,7 +11,9 @@ ThreadWorker::ThreadWorker(int i, Process& ProcesstoExecute) : id(i), ProcesstoE
 //Executes the function
 void ThreadWorker::run_async() {
 
-   ProcesstoExecute.state = RUNNING;
+    ProcesstoExecute.state = RUNNING;
+
+
     for(int i = 0; i < ProcesstoExecute.total_instructions; i++)
     {
         ProcesstoExecute.current_instruction = i + 1;
@@ -20,24 +22,26 @@ void ThreadWorker::run_async() {
             chrono::milliseconds(100)
         );
     }
-     ProcesstoExecute.state = FINISHED;
-       const std::string fileName = "process_" +ProcesstoExecute.process_name+".txt";
-       ofstream writeFile(fileName);
 
-       writeFile << "Process name: " << ProcesstoExecute.process_name << std::endl;
-       writeFile << "Logs:" << std::endl << std::endl;
+    ProcesstoExecute.state = FINISHED;
+    const std::string fileName = "process_" +ProcesstoExecute.process_name+".txt";
+    ofstream writeFile(fileName);
 
-       for(int i = 0; i < ProcesstoExecute.total_instructions; i++){
+    writeFile << "Process name: " << ProcesstoExecute.process_name << std::endl;
+    writeFile << "Logs:" << std::endl << std::endl;
 
-          std::time_t timestamp = std::time(nullptr);
-          std::tm datetime;
-          localtime_s(&datetime, &timestamp);
+    for(int i = 0; i < ProcesstoExecute.total_instructions; i++){
+
+        std::time_t timestamp = std::time(nullptr);
+        std::tm datetime;
+        localtime_s(&datetime, &timestamp);
+    
+        char timeString[50];
        
-          char timeString[50];
-          std::strftime(timeString, sizeof(timeString), "%m/%d/%y %I:%M:%S%p", &datetime);
-          writeFile <<"(" << timeString <<") "<< "Core:" << id << " \"" << "Hello World from "<< ProcesstoExecute.process_name<<"!" << "\"" << std::endl;
-          this_thread::sleep_for(chrono::milliseconds(100));
-       }
+        std::strftime(timeString, sizeof(timeString), "%m/%d/%y %I:%M:%S%p", &datetime);
+        writeFile <<"(" << timeString <<") "<< "Core:" << id << " \"" << "Hello World from "<< ProcesstoExecute.process_name<<"!" << "\"" << std::endl;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
 
-       writeFile.close();
+    writeFile.close();
 }

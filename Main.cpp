@@ -19,8 +19,41 @@ atomic<bool> isEmulatorRunning(true);
 atomic<bool> cpuFree[ThreadWorker::N_THREADS];
 
 vector<unique_ptr<Process>> processList;
+void getCurrTimeString(char* output) {
+    std::time_t timestamp = std::time(nullptr);
+    std::tm datetime;
+    localtime_s(&datetime, &timestamp);
+       
+    std::strftime(output, sizeof(output), "%m/%d/%y %I:%M:%S%p", &datetime);
+}
 
+void printProcess(const Process* process)
+{
+    char timeString[50];
+    getCurrTimeString(timeString);
+    cout
+        << process->process_name
+        << "\t( " 
+        << process->start_time
+        << " )"
+        << "\tCore: ";
 
+    if (process->core_id == -1)
+    {
+        cout << "N/A";
+    }
+    else
+    {
+        cout << process->core_id << "\t";
+    }
+
+    cout
+        << "\t"
+        << process->current_instruction
+        << " / "
+        << process->total_instructions
+        << endl;
+}
 
 void fcfs_scheduler()
 {
@@ -116,35 +149,34 @@ int main()
     {
         cout << endl;
 
-        cout << "Running processes:" << endl;
+        vector<Process*> runningProcesses;
+        vector<Process*> finishedProcesses;
 
-        for(auto& process : processList)
+        for (auto& process : processList)
         {
-                cout
-                    << "Name: "
-                    << process->process_name
-
-                    << " | Core: ";
-
-                    if(process->core_id == -1)
-                            {
-                                cout << "N/A";
-                            }
-                            else
-                            {
-                                cout << process->core_id;
-                            }
-                    cout << " | "
-
-                    << process->current_instruction
-
-                    << " / "
-
-                    << process->total_instructions
-
-                    << endl;
+            if (process->current_instruction == process->total_instructions)
+            {
+                finishedProcesses.push_back(process.get());
+            }
+            else
+            {
+                runningProcesses.push_back(process.get());
+            }
         }
 
+        cout << "Running processes:" << endl;
+
+        for (const auto* process : runningProcesses)
+        {
+            printProcess(process);
+        }
+
+        cout << endl << "Finished processes:" << endl;
+
+        for (const auto* process : finishedProcesses)
+        {
+            printProcess(process);
+        }
         cout << endl;
     }
 
@@ -153,8 +185,6 @@ int main()
         break;
     }
 }
-
-    // The other stuff goes here
 
     // Clean up before exiting
     isEmulatorRunning = false;
