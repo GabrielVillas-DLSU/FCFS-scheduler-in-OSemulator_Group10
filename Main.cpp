@@ -165,7 +165,7 @@ int main()
 
         for (auto& process : processList)
         {
-            if (process->current_instruction == process->total_instructions)
+            if (process->state == FINISHED)
             {
                 finishedProcesses.push_back(process.get());
             }
