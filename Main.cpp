@@ -5,6 +5,8 @@
 #include <condition_variable>
 #include <atomic>
 #include <chrono>
+#include <ctime>
+#include <iomanip>
 #include "Process.h"
 #include "ThreadWorker.h"
 
@@ -19,40 +21,46 @@ atomic<bool> isEmulatorRunning(true);
 atomic<bool> cpuFree[ThreadWorker::N_THREADS];
 
 vector<unique_ptr<Process>> processList;
-void getCurrTimeString(char* output) {
+void getCurrTimeString(char* output, size_t outputSize) {
     std::time_t timestamp = std::time(nullptr);
     std::tm datetime;
     localtime_s(&datetime, &timestamp);
        
-    std::strftime(output, sizeof(output), "%m/%d/%y %I:%M:%S%p", &datetime);
+    std::strftime(output, outputSize, "%m/%d/%y %I:%M:%S%p", &datetime);
 }
 
 void printProcess(const Process* process)
 {
-    char timeString[50];
-    getCurrTimeString(timeString);
-    cout
-        << process->process_name
-        << "\t( " 
-        << process->start_time
-        << " )"
-        << "\tCore: ";
+    int nameWidth = 13;
+    int timeWidth = 23;
+    int coreWidth = 8;
 
-    if (process->core_id == -1)
+    cout << left << setw(nameWidth) << process->process_name;
+
+    if (process->core_id != -1)
     {
-        cout << "N/A";
+        cout << "( " << process->start_time << " )";
     }
     else
     {
-        cout << process->core_id << "\t";
+        cout << setw(timeWidth) << "";
+    }
+        
+    cout << "    Core: ";
+
+    if (process->core_id == -1)
+    {
+        cout << left << setw(coreWidth) << "N/A";
+    }
+    else
+    {
+        cout << left << setw(coreWidth) << process->core_id;
     }
 
-    cout
-        << "\t"
-        << process->current_instruction
-        << " / "
-        << process->total_instructions
-        << endl;
+    cout << process->current_instruction
+         << " / "
+         << process->total_instructions
+         << endl;
 }
 
 void fcfs_scheduler()
@@ -93,6 +101,9 @@ void fcfs_scheduler()
                     thread([i, nextProcess]() {
 
                         ThreadWorker worker(i, *nextProcess); 
+
+                        getCurrTimeString(nextProcess->start_time, sizeof(nextProcess->start_time));
+
                         worker.run_async();
                         
                         // Free up the CPU core for the next process

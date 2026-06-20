@@ -14,7 +14,7 @@ class Process
 public:
 
     string process_name;
-    string start_time;
+    char start_time[50];
     State state;
     int current_instruction;
     int total_instructions;
